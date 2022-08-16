@@ -2,7 +2,7 @@ import {IInputs, IOutputs} from "./generated/ManifestTypes";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { IProps, MultiSelectControl } from "./MultiSelect";
-import { defaultProps } from "react-select/src/Select";
+import  defaultProps  from "react-select";
 import { debug } from "console";
 
 export class MultiSelectPCFControl implements ComponentFramework.StandardControl<IInputs, IOutputs> {
@@ -53,11 +53,11 @@ export class MultiSelectPCFControl implements ComponentFramework.StandardControl
 		this._container = document.createElement("div");
 		this.props.value = context.parameters.sampleProperty.raw || "";	
 		this.props.entityName = context.parameters.entityName.raw || "";
-		this.props.filterField = context.parameters.filterField.raw || "";
+		//this.props.filterField = context.parameters.filterField.raw || "";
 		this.props.topCount = context.parameters.topCount.raw || "";
-		this.props.columns = context.parameters.columns.raw || "";
-		this.props.displayFieldLabel = context.parameters.displayFieldLabel.raw || "";
-		this.props.displayValueField = context.parameters.displayValueField.raw || "";
+		//this.props.columns = context.parameters.columns.raw || "";
+		//this.props.displayFieldLabel = context.parameters.displayFieldLabel.raw || "";
+		//this.props.displayValueField = context.parameters.displayValueField.raw || "";
 					
 		if(this.props.value.length > 0)
 		{
@@ -98,7 +98,7 @@ export class MultiSelectPCFControl implements ComponentFramework.StandardControl
 			var count = 0;
 			var qs = `?$select=${this.props.columns}&$filter=`;		
 
-			this.props.value.split(",").forEach(c=>{			
+			this.props.value.split(",").forEach((c: string| any)=>{			
 				if (count > 0)
 				{
 					qs = qs + ' or ' + this.props.displayValueField + ' eq ' + c

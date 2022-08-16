@@ -11,7 +11,7 @@ export interface IProps {
 	topCount: any;
 	filterField: any;
 	entityName: any;
-    value: string;
+    value:  any;
 	onChange: (value:string) => void;
 	onSearch: (value:string) => void;	
 	records: any
@@ -47,7 +47,7 @@ export class MultiSelectControl extends React.Component<IProps, IState> {
 		this.props.onChange(res);
 	}
 
-	loadOptions = async (inputValue: string) => {
+	loadOptions:any = async (inputValue: string) => {
 		const res = this.props.onSearch(inputValue);
 		return res;		
 	}	
