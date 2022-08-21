@@ -83,13 +83,48 @@ export class MultiSelectPCFControl implements ComponentFramework.StandardControl
 
 	async notifySearch(newValue: string)
 	{
-		console.log("called notifySearch");
-		console.log(this.props.entityName,`?$select=${this.props.columns}&$filter=contains(${this.props.filterField}, '${newValue}')&$top=${this.props.topCount}`);
+// 		console.log("called notifySearch");
+// 		console.log(this.props.entityName,`?$select=${this.props.columns}&$filter=contains(${this.props.filterField}, '${newValue}')&$top=${this.props.topCount}`);
 
-		return this._context.webAPI.retrieveMultipleRecords(this.props.entityName,`?$select=${this.props.columns}&$filter=contains(${this.props.filterField}, '${newValue}')&$top=${this.props.topCount}`)
-		.then(function (results) {		
-				return results?.entities;		
-		})
+// 		return this._context.webAPI.retrieveMultipleRecords(this.props.entityName,`?$select=${this.props.columns}&$filter=contains(${this.props.filterField}, '${newValue}')&$top=${this.props.topCount}`)
+// 		.then(function (results) {		
+// 				return results?.entities;		
+// 		})
+		console.log("called notifySearch");
+
+        let account = Xrm.Page.getAttribute("con_account").getValue();
+
+        let getContacts="";
+
+        if(account!=null){
+
+            let accountId = account[0].id.replace("{", "").replace("}", "");            
+
+            console.log(accountId);
+
+            getContacts=`?$select=${this.props.columns}&$filter=contains(${this.props.filterField},'${newValue}') and _parentcustomerid_value eq `+accountId+` &$top=${this.props.topCount}`;
+
+        }
+
+        else{
+
+            getContacts=`?$select=${this.props.columns}&$filter=contains(${this.props.filterField},'${newValue}')&$top=${this.props.topCount}`;
+
+        }
+
+       
+
+        console.log(this.props.entityName,getContacts);
+
+        return this._context.webAPI.retrieveMultipleRecords(this.props.entityName,getContacts)
+
+        .then(function (results) {      
+
+                return results?.entities;      
+
+        })
+
+
 	}
 
 	//Load previous values
