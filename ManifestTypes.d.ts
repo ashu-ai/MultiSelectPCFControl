@@ -4,14 +4,18 @@
 
 // Define IInputs and IOutputs Type. They should match with ControlManifest.
 export interface IInputs {
-    sampleProperty: ComponentFramework.PropertyTypes.LookupProperty;
+    sampleProperty: ComponentFramework.PropertyTypes.StringProperty;
     entityName: ComponentFramework.PropertyTypes.StringProperty;
     filterField: ComponentFramework.PropertyTypes.StringProperty;
-    topCount: ComponentFramework.PropertyTypes.LookupProperty;
-    columns: ComponentFramework.PropertyTypes.LookupProperty;
-    displayFieldLabel: ComponentFramework.PropertyTypes.LookupProperty;
-    displayValueField: ComponentFramework.PropertyTypes.LookupProperty;
+    topCount: ComponentFramework.PropertyTypes.StringProperty;
+    columns: ComponentFramework.PropertyTypes.StringProperty;
+    displayFieldLabel: ComponentFramework.PropertyTypes.StringProperty;
+    displayValueField: ComponentFramework.PropertyTypes.StringProperty;
+    account: ComponentFramework.PropertyTypes.LookupProperty;
+    Button: ComponentFramework.PropertyTypes.StringProperty;
 }
 export interface IOutputs {
-    sampleProperty?: ComponentFramework.LookupValue[];
+    sampleProperty?: string;
+    account?: ComponentFramework.LookupValue[];
+    Button?: string;
 }
