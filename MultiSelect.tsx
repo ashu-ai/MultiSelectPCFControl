@@ -1,6 +1,8 @@
 import * as React from "react";
 import AsyncSelect from 'react-select/async';
 
+
+
 export interface IProps {
 	initialValues: any;
 	isControlVisible: boolean;
@@ -11,21 +13,26 @@ export interface IProps {
 	topCount: any;
 	filterField: any;
 	entityName: any;
-    value: string;
+    value:  any;
+		value1:  any;
 	onChange: (value:string) => void;
 	onSearch: (value:string) => void;	
+	onChange1: (value1:string) => void;
+	onSearch1: (value1:string) => void;	
 	records: any
 }
 
 export interface IState {
     value: string;
+		
 }
 
 export class MultiSelectControl extends React.Component<IProps, IState> {
 		
     constructor(props: Readonly<IProps>) {
 		super(props);	
-		this.state = { value: props.value};     
+		this.state = { value: props.value}; 
+		//+this.state = { value1: props.value1};     
 	}
 
 	componentWillReceiveProps(p: IProps) 
@@ -47,7 +54,7 @@ export class MultiSelectControl extends React.Component<IProps, IState> {
 		this.props.onChange(res);
 	}
 
-	loadOptions = async (inputValue: string) => {
+	loadOptions:any = async (inputValue: string) => {
 		const res = this.props.onSearch(inputValue);
 		return res;		
 	}	
@@ -71,6 +78,10 @@ export class MultiSelectControl extends React.Component<IProps, IState> {
 			isDisabled={this.props.isControlDisabled}
 			onChange={this.onChange}
 			defaultValue={this.props.initialValues}
+
+	
+ 
+
 			/></div>
 		)
 		}
@@ -78,4 +89,6 @@ export class MultiSelectControl extends React.Component<IProps, IState> {
 			return (<></>);
 		};
 	}
+
+
 }

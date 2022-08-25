@@ -2,20 +2,28 @@ import {IInputs, IOutputs} from "./generated/ManifestTypes";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { IProps, MultiSelectControl } from "./MultiSelect";
-import { defaultProps } from "react-select/src/Select";
+import  defaultProps  from "react-select";
 import { debug } from "console";
 
 export class MultiSelectPCFControl implements ComponentFramework.StandardControl<IInputs, IOutputs> {
-
+	private _eleMainContainer:HTMLDivElement;
+	private _eleButton:HTMLButtonElement;
+	private eventSubmitClicked:EventListenerOrEventListenerObject;
+	
+	
 	private _existingValues: any
 	private _value: any;
+   private _value1:any;
 	private _notifyOutputChanged:() => void;
 	private _container: HTMLDivElement;
 	private props: IProps = 
 	{ 
 		value : "", 
 		onChange : this.notifyChange.bind(this),
-		onSearch : this.notifySearch.bind(this),	
+		onSearch : this.notifySearch.bind(this),
+		onChange1 : this.notifyChange.bind(this),
+		onSearch1 : this.notifySearch.bind(this),
+		value1:"",
 		initialValues : undefined,	
 		records: [],
 		displayValueField: "",
@@ -48,9 +56,30 @@ export class MultiSelectPCFControl implements ComponentFramework.StandardControl
 	public async init(context: ComponentFramework.Context<IInputs>, notifyOutputChanged: () => void, state: ComponentFramework.Dictionary, container:HTMLDivElement)
 	{
 		// Add control initialization code
-		this._context = context;
+		this._container = container;
+this._context = context;
+//this.theNotifyOutputChanged = notifyOutputChanged;
+//The assignment of the event listener to the function should be done before creating the UI     
+
+this.eventSubmitClicked = this.submitClicked.bind(this);
+//Create UI        
+//Main Container
+this._eleMainContainer = document.createElement("div");
+this._eleMainContainer.className = "mydiv";
+//Define a button
+this._eleButton = document.createElement("button");
+this._eleButton.className = "canvasAppButton";             
+this._eleButton.innerHTML = "Finish";
+this._eleButton.addEventListener("click", this.eventSubmitClicked);
+//Add the button inside the main container, and the main container inside the container
+this._eleMainContainer.appendChild(this._eleButton);
+this._container.appendChild(this._eleMainContainer);
+
+
+		///
+		//this._context = context;
 		this._notifyOutputChanged = notifyOutputChanged;
-		this._container = document.createElement("div");
+		//this._container = document.createElement("div");
 		this.props.value = context.parameters.sampleProperty.raw || "";	
 		this.props.entityName = context.parameters.entityName.raw || "";
 		this.props.filterField = context.parameters.filterField.raw || "";
@@ -73,6 +102,8 @@ export class MultiSelectPCFControl implements ComponentFramework.StandardControl
 		container.appendChild(this._container);
 		
 	}
+	//Custom event handler – for the button
+	private submitClicked(event: Event): void{  alert("sjkdwsdjj");    }
 
 	notifyChange(newValue: string) 
 	{
@@ -80,16 +111,92 @@ export class MultiSelectPCFControl implements ComponentFramework.StandardControl
 		this._notifyOutputChanged();
 		console.log("notifyChange");
 	}
-
+  notifyChange1(newValue: string) 
+	{
+		this._value1 = newValue;
+		this._notifyOutputChanged();
+		console.log("notifyChange");
+	}
 	async notifySearch(newValue: string)
 	{
-		console.log("called notifySearch");
-		console.log(this.props.entityName,`?$select=${this.props.columns}&$filter=contains(${this.props.filterField}, '${newValue}')&$top=${this.props.topCount}`);
 
-		return this._context.webAPI.retrieveMultipleRecords(this.props.entityName,`?$select=${this.props.columns}&$filter=contains(${this.props.filterField}, '${newValue}')&$top=${this.props.topCount}`)
-		.then(function (results) {		
-				return results?.entities;		
-		})
+		console.log("called notifySearch");
+
+        let account = Xrm.Page.getAttribute("dev_accpount").getValue();
+
+        let getContacts="";
+
+        if(account!=null){
+
+            let accountId = account[0].id.replace("{", "").replace("}", "");            
+
+            console.log(accountId);
+
+            getContacts=`?$select=${this.props.columns}&$filter=contains(${this.props.filterField},'${newValue}') and _parentcustomerid_value eq `+accountId+` &$top=${this.props.topCount}`;
+
+        }
+
+        else{
+
+            getContacts=`?$select=${this.props.columns}&$filter=contains(${this.props.filterField},'${newValue}')&$top=${this.props.topCount}`;
+
+        }
+
+       
+
+        console.log(this.props.entityName,getContacts);
+
+        return this._context.webAPI.retrieveMultipleRecords(this.props.entityName,getContacts)
+
+        .then(function (results) {      
+
+                return results?.entities;      
+
+        })
+
+
+	}
+
+	///Newly Added
+	async notifySearch1(newValue: string)
+	{
+
+		console.log("called notifySearch");
+
+        //let account = Xrm.Page.getAttribute("dev_accpount").getValue();
+				let account=this._value1[0].id;
+
+        let getContacts="";
+
+        if(account!=null){
+
+            //let accountId = account[0].id.replace("{", "").replace("}", "");            
+
+            console.log(account);
+
+            getContacts=`?$select=${this.props.columns}&$filter=contains(${this.props.filterField},'${newValue}') and _parentcustomerid_value eq `+account+` &$top=${this.props.topCount}`;
+
+        }
+
+        else{
+
+            getContacts=`?$select=${this.props.columns}&$filter=contains(${this.props.filterField},'${newValue}')&$top=${this.props.topCount}`;
+
+        }
+
+       
+
+        console.log(this.props.entityName,getContacts);
+
+        return this._context.webAPI.retrieveMultipleRecords(this.props.entityName,getContacts)
+
+        .then(function (results) {      
+
+                return results?.entities;      
+
+        })
+
+
 	}
 
 	//Load previous values
@@ -98,7 +205,7 @@ export class MultiSelectPCFControl implements ComponentFramework.StandardControl
 			var count = 0;
 			var qs = `?$select=${this.props.columns}&$filter=`;		
 
-			this.props.value.split(",").forEach(c=>{			
+			this.props.value.split(",").forEach((c: string| any)=>{			
 				if (count > 0)
 				{
 					qs = qs + ' or ' + this.props.displayValueField + ' eq ' + c
@@ -143,7 +250,8 @@ export class MultiSelectPCFControl implements ComponentFramework.StandardControl
 		// Add code to update control view
 		this._value = context.parameters.sampleProperty.raw;
 		this.props.value = this._value;
-		
+		this._value1 = context.parameters.account.raw;
+		this.props.value1 = this._value1;
 		this.props.topCount = context.parameters.topCount.raw;
 		this.props.columns = context.parameters.columns.raw;
 		this.props.filterField = context.parameters.filterField.raw;
@@ -163,8 +271,8 @@ export class MultiSelectPCFControl implements ComponentFramework.StandardControl
 		console.log("getoutputs");
 
 		return {
-			sampleProperty : this._value
-		};
+			sampleProperty : this._value,
+			account: this._value1		};
 	}
 
 	/** 
